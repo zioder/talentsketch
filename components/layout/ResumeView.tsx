@@ -1,14 +1,14 @@
-"use client"; // <-- Add this line to mark this as a Client Component
+"use client"; 
 
 import { Button } from "@/components/ui/button";
 import { Mails, Share2Icon, DownloadIcon } from "lucide-react";
 import { FormProvider, useFormContext } from "@/lib/context/FormProvider";
-import { usePathname } from "next/navigation"; // This requires the component to be a Client Component
+import { usePathname } from "next/navigation"; 
 import PageWrapper from "@/components/common/PageWrapper";
 import Header from "@/components/layout/Header";
 import React, { useState, useEffect } from "react";
 import ResumePreview from "@/components/layout/my-resume/ResumePreview";
-import { RWebShare } from "react-web-share"; // Import RWebShare correctly
+import { RWebShare } from "react-web-share"; 
 
 const FinalResumeView = ({
   params,
@@ -20,7 +20,7 @@ const FinalResumeView = ({
   const { formData, setFormData } = useFormContext();
   const [post, setPost] = useState(formData?.post || "");
   const [companyName, setCompanyName] = useState(formData?.companyName || "");
-  const [generatedLetter, setGeneratedLetter] = useState<string | null>(null); // Add state for generated letter
+  const [generatedLetter, setGeneratedLetter] = useState<string | null>(null); 
 
   useEffect(() => {
     if (setFormData) {
@@ -33,21 +33,18 @@ const FinalResumeView = ({
   };
 
   const handleMotivationLetterClick = async () => {
-    // Get post and companyName from the form data
     const post = formData?.post;
     const companyName = formData?.companyName;
 
-    // Generate the motivation letter (this could be handled with an API call or another method)
     const generated = `Dear Sir/Madam, I am applying for the position of ${post} at ${companyName}. I am excited to contribute my skills.`;
 
-    setGeneratedLetter(generated); // Set the generated letter content
+    setGeneratedLetter(generated); 
 
-    // Directly pass to the Streamlit URL with the parameters
     const streamlitUrl = `http://localhost:8501/?post=${encodeURIComponent(
       post
     )}&companyName=${encodeURIComponent(companyName)}`;
 
-    window.open(streamlitUrl, "_blank"); // Open Streamlit in a new tab
+    window.open(streamlitUrl, "_blank"); 
   };
 
   const path = usePathname();
