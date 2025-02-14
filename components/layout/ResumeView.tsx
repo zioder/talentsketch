@@ -1,14 +1,14 @@
-"use client";
+"use client"; // <-- Add this line to mark this as a Client Component
 
-import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
+import { Mails, Share2Icon, DownloadIcon } from "lucide-react";
 import { FormProvider, useFormContext } from "@/lib/context/FormProvider";
-import { RWebShare } from "react-web-share";
-import React from "react";
-import ResumePreview from "@/components/layout/my-resume/ResumePreview";
-import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation"; // This requires the component to be a Client Component
 import PageWrapper from "@/components/common/PageWrapper";
-import { DownloadIcon, Share2Icon , Mails } from "lucide-react";
+import Header from "@/components/layout/Header";
+import React, { useState, useEffect } from "react";
+import ResumePreview from "@/components/layout/my-resume/ResumePreview";
+import { RWebShare } from "react-web-share"; // Import RWebShare correctly
 
 const FinalResumeView = ({
   params,
@@ -17,19 +17,40 @@ const FinalResumeView = ({
   params: { id: string };
   isOwnerView: boolean;
 }) => {
-  const path = usePathname();
-  const { formData } = useFormContext();
+  const { formData, setFormData } = useFormContext();
+  const [post, setPost] = useState(formData?.post || "");
+  const [companyName, setCompanyName] = useState(formData?.companyName || "");
+  const [generatedLetter, setGeneratedLetter] = useState<string | null>(null); // Add state for generated letter
 
-  console.log(formData)
+  useEffect(() => {
+    if (setFormData) {
+      setFormData({ ...formData, post, companyName });
+    }
+  }, [post, companyName, formData, setFormData]);
 
   const handleDownload = () => {
     window.print();
   };
 
-
   const handleMotivationLetterClick = async () => {
-    console.log(await formData)
-  }
+    // Get post and companyName from the form data
+    const post = formData?.post;
+    const companyName = formData?.companyName;
+
+    // Generate the motivation letter (this could be handled with an API call or another method)
+    const generated = `Dear Sir/Madam, I am applying for the position of ${post} at ${companyName}. I am excited to contribute my skills.`;
+
+    setGeneratedLetter(generated); // Set the generated letter content
+
+    // Directly pass to the Streamlit URL with the parameters
+    const streamlitUrl = `http://localhost:8501/?post=${encodeURIComponent(
+      post
+    )}&companyName=${encodeURIComponent(companyName)}`;
+
+    window.open(streamlitUrl, "_blank"); // Open Streamlit in a new tab
+  };
+
+  const path = usePathname();
 
   return (
     <PageWrapper>
@@ -43,13 +64,8 @@ const FinalResumeView = ({
                   Congrats! Your ultimate AI-generated resume is ready!
                 </h2>
                 <p className="text-center text-gray-600">
-                  You can now download your resume or share its unique URL with
-                  your friends and family.
-                </p>
-                <p className="text-center text-sm text-gray-500 font-light">
-                  For better print quality, adjust your browser's print
-                  settings: save as PDF, disable headers and footers, set
-                  margins to none, and enable background graphics.
+                  You can now download your resume or generate a motivation
+                  letter.
                 </p>
               </>
             ) : (
@@ -59,10 +75,6 @@ const FinalResumeView = ({
                 </h2>
                 <p className="text-center text-gray-600">
                   You are currently viewing a preview of someone else's resume.
-                </p>
-                <p className="text-center text-sm text-gray-500 font-light">
-                  For the ultimate experience, create your own AI-generated
-                  resume.
                 </p>
               </>
             )}
@@ -79,6 +91,7 @@ const FinalResumeView = ({
               >
                 <Mails className="size-6" /> Generate Motivation Letter
               </Button>
+
               <RWebShare
                 data={{
                   text: "Hello everyone, check out my resume by clicking the link!",
@@ -91,7 +104,6 @@ const FinalResumeView = ({
                   <Share2Icon className="size-6" /> Share URL
                 </Button>
               </RWebShare>
-              
             </div>
           </div>
         </div>
@@ -104,5 +116,6 @@ const FinalResumeView = ({
     </PageWrapper>
   );
 };
+
 
 export default FinalResumeView;
