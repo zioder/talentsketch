@@ -1,4 +1,6 @@
 pour activer llm model 
+pip install streamlit pdfminer.six python-docx langchain langchain_groq
+
 node server.js
 puis 
 ****cd letter_generation 
